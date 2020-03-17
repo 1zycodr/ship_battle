@@ -1,12 +1,15 @@
 import random
 from constants import *
 from my_exception import Wrong_move, Hit_move, Destroy_move
+import copy
 class Board:
+    four_deck = list()
     def __init__(self):
         self.board = [0] * 10
+        
         for i in range(10):
             self.board[i] = [FREE] * 10
-
+        
     def set_ship(self, coordinates):
         """
         setting ship on the board, excluding its borders
@@ -99,6 +102,9 @@ class Board:
             for count in range(5 - ship_len):
                 possible_pos = self.get_possible_pos(ship_len)
                 new_ship = random.choice(possible_pos)
+                if ship_len == 4:
+                    for i in new_ship:
+                        self.four_deck.append(i)
                 self.set_ship(new_ship)
 
     def show_own_board(self):
@@ -191,6 +197,17 @@ class Board:
         return True if count == 20 else False
     
     def ship_destroyed(self, i, j):
+        print('list1: ', self.four_deck, i, j)
+        if (i, j) in self.four_deck:
+            count = 0
+            for m, n in self.four_deck:
+                if self.board[m][n] == ATTACKED_DECK:
+                    count += 1
+            print('Count: ', count)
+            if count == 4:
+                return True
+            else:
+                return False
         if i != 0:
             if self.board[i - 1][j] == INTACT_DECK:
                 return False
@@ -241,7 +258,6 @@ class Board:
             self.board[n][m] = DEAD_SHIP
 
     def make_step(self, i, j):
-        print('step: ', i, j)
         if self.board[i][j] == FREE or self.board[i][j] == ADJACENT:
             self.board[i][j] = ATTACKED_FREE
         elif self.board[i][j] == INTACT_DECK:

@@ -50,13 +50,11 @@ class Player (object):
                     return False
             else:
                 return False
-
             if step[1].isalpha():
                 if step[1] not in 'ABCDEFGHIJ':
                     return False
             else:
                 return False
-
         elif len(step) == 3:
             if step[0].isdigit() and step[1].isdigit():
                 if step[0] != '1' or step[1] != '0':
@@ -68,7 +66,6 @@ class Player (object):
                     return False
         else:
             return False
-    
         return True
 
 if __name__ == '__main__':

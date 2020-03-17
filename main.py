@@ -3,13 +3,6 @@ from player import Player
 from tools import typewriter, player_winning
 import copy
 
-# 5 - мёртвый корабль
-# 4 - мёртвая палуба
-# 3 - атакованная пустая клетка
-# 2 - целая палуба
-# 1 - соседняя кораблю клетка
-# 0 - пустая клетка
-
 player_1 = Player(1)
 player_2 = Player(2)
 
