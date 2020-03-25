@@ -7,10 +7,13 @@ class Player (object):
         typewriter('Enter player ' + str(id)  + ' name: ')
         self.name = input()
         self.id = id
-        self.s_board = Board()
-        self.e_board = Board()
+        self.s_board = Board(id)
+        self.e_board = Board(id)
     
     def make_step(self):
+        """
+        asks for the coordinates and executes the move
+        """
         print('Your board: ')
         self.s_board.show_own_board()
         print('Enemy board: ')
@@ -19,11 +22,11 @@ class Player (object):
         step_status = True
 
         while step_status:
-            step = input(self.name + ', enter attack point (9C, 3A...): ')
-
+            step = input(self.name + ', enter attack point (9C, 3A...): ').upper()
+            
             while not self.check_input(step):
                 print('Error! Incorrect input.')
-                step = input(self.name + ', enter attack point (9C, 3A...): ')
+                step = input(self.name + ', enter attack point (9C, 3A...): ').upper()
 
             try:
                 self.e_board.make_step(int(step[:-1]) - 1, ord(step[-1]) - 65)
@@ -33,17 +36,20 @@ class Player (object):
             except Hit_move as ex:
                 self.e_board.show_enemy_board()
                 if self.e_board.winning_arrangement():
-                    print('You won!')
-                    exit(0)
+                    return
                 print(ex)
             except Destroy_move as ex:
                 self.e_board.show_enemy_board()
                 if self.e_board.winning_arrangement():
-                    print('You won!')
-                    exit(0)
+                    return
                 print(ex)
 
     def check_input(self, step):
+        """
+        checks valid input or not
+        :param step: string, coordinates (1A, 1a, 10F, 9g)
+        :return: True - valid input, False - invalid input
+        """
         if len(step) == 2:
             if step[0].isdigit():
                 if int(step[0]) not in range(1, 11):

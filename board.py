@@ -1,12 +1,11 @@
 import random
 from constants import *
 from my_exception import Wrong_move, Hit_move, Destroy_move
-import copy
 class Board:
     four_deck = list()
-    def __init__(self):
+    def __init__(self, id):
         self.board = [0] * 10
-        
+        self.id = id
         for i in range(10):
             self.board[i] = [FREE] * 10
         
@@ -106,7 +105,7 @@ class Board:
                     for i in new_ship:
                         self.four_deck.append(i)
                 self.set_ship(new_ship)
-
+            
     def show_own_board(self):
         """
         printing own board
@@ -197,32 +196,49 @@ class Board:
         return True if count == 20 else False
     
     def ship_destroyed(self, i, j):
-        print('list1: ', self.four_deck, i, j)
-        if (i, j) in self.four_deck:
-            count = 0
-            for m, n in self.four_deck:
-                if self.board[m][n] == ATTACKED_DECK:
-                    count += 1
-            print('Count: ', count)
-            if count == 4:
-                return True
-            else:
-                return False
-        if i != 0:
-            if self.board[i - 1][j] == INTACT_DECK:
-                return False
-        if i != 9:
-            if self.board[i + 1][j] == INTACT_DECK:
-                return False
-        if j != 0:
-            if self.board[i][j - 1] == INTACT_DECK:
-                return False 
-        if j != 9:
-            if self.board[i][j + 1] == INTACT_DECK:
-                return False
+        """
+        checks, the ship was destroyed or not
+        :param i: y - coordinate of hitted deck
+        :param j: x - coordinate of hitted deck
+        :return True: If ship was destroyed
+        :return False: If ship was not destroyed
+        """
+        for k in range(1, 4):
+            if i - k >= 0:
+                if self.board[i - k][j] == FREE or self.board[i - k][j] == ATTACKED_FREE or self.board[i - k][j] == ADJACENT:
+                    break
+                elif self.board[i - k][j] == INTACT_DECK:
+                    return False
+                                
+        for k in range(1, 4):
+            if i + k <= 9:
+                if self.board[i + k][j] == FREE or self.board[i + k][j] == ATTACKED_FREE or self.board[i + k][j] == ADJACENT:
+                    break
+                elif self.board[i + k][j] == INTACT_DECK:
+                    return False
+                                
+        for k in range(1, 4):
+            if j - k >= 0:
+                if self.board[i][j - k] == FREE or self.board[i][j - k] == ATTACKED_FREE or  self.board[i][j - k] == ADJACENT:
+                    break
+                elif self.board[i][j - k] == INTACT_DECK:
+                    return False
+                                
+        for k in range(1, 4):
+            if j + k <= 9:
+                if self.board[i][j + k] == FREE or self.board[i][j + k] == ATTACKED_FREE or self.board[i][j + k] == ADJACENT:
+                    break
+                elif self.board[i][j + k] == INTACT_DECK:
+                    return False
+                                
         return True
 
     def fill_adjacent_near_destroyed_ship(self, i, j):
+        """
+        fills adjacent cell 
+        :param i: y - coordinate of deck of destroyed ship
+        :param j: x - coordinate of deck of destroyed ship
+        """
         destroyed_ship = [(i, j)]
 
         for k in range(1, 4):            
@@ -258,6 +274,14 @@ class Board:
             self.board[n][m] = DEAD_SHIP
 
     def make_step(self, i, j):
+        """
+        performing move
+        :param i: y - coordinate
+        :param j: x - coordinate
+        :raise Destroy_move: when ship was destroyed
+        :raise Hit_move: when deck was hitted
+        :raise Wrong_move: when this point has already attacked
+        """
         if self.board[i][j] == FREE or self.board[i][j] == ADJACENT:
             self.board[i][j] = ATTACKED_FREE
         elif self.board[i][j] == INTACT_DECK:
